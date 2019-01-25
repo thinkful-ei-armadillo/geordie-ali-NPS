@@ -3,7 +3,8 @@
 // put your own value below!
 const apiKey = 'mapni7xujPvFutDVpHTza00RkwrZVaJlaFVqbH4w';
 const searchURL =
-  'https://developer.nps.gov/api/v1/parks?parkCode=acad&api_key=mapni7xujPvFutDVpHTza00RkwrZVaJlaFVqbH4w';
+    'https://developer.nps.gov/api/v1/parks';
+
 
 function formatQueryParams(params) {
   const queryItems = Object.keys(params)
@@ -27,22 +28,27 @@ function displayResults(responseJson) {
 
 function getParks(state, limit = 10) {
   const params = {
-    key: apiKey,
-    stateCode: state,
-    limit
+    q: state,
+    language: 'en',
+    api_key: apiKey
+  };
+  const options = {
+    headers: new Headers({
+      "X-Api-Key": apiKey
+    })
   };
   const queryString = formatQueryParams(params);
   const url = searchURL + '?' + queryString;
 
   console.log(url);
 
-  fetch(url)
+  fetch(url, options)
     .then(response => {
       if (response.ok) {
         return response.json();
-      }
-      throw new Error(response.statusText);
-    })
+      } else {
+        throw new Error(response.statusText);
+      }})
     .then(responseJson => displayResults(responseJson))
     .catch(err => {
       $('#js-error-message').text(`Something went wrong: ${err.message}`);
@@ -59,3 +65,29 @@ function parkForm() {
 }
 
 $(parkForm);
+
+//added the below code with TA to test why our API key won't load on our server
+
+function getNews(query, maxResults = 10) {
+  const params = {
+    q: query,
+    language: "en",
+  };
+  const queryString = formatQueryParams(params)
+  const url = searchURL + '?' + queryString;
+
+  console.log(url);
+
+  const options = {
+    headers: new Headers({
+      "X-Api-Key": apiKey
+    })
+  };
+
+  fetch(url, options)
+    .then(response => response.json())
+    .then(responseJson => console.log(responseJson))
+    .catch(err => {
+      $('#js-error-message').text(`Something went wrong: ${err.message}`);
+    });
+}
