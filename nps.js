@@ -30,12 +30,12 @@ function getParks(state, limit = 10) {
   const params = {
     q: state,
     language: 'en',
-    api_key: apiKey
+    // api_key: apiKey
   };
   const options = {
-    headers: new Headers({
-      "X-Api-Key": apiKey
-    })
+    headers: {
+      'X-Api-Key': apiKey
+    }
   };
   const queryString = formatQueryParams(params);
   const url = searchURL + '?' + queryString;
@@ -73,7 +73,7 @@ function getNews(query, maxResults = 10) {
     q: query,
     language: "en",
   };
-  const queryString = formatQueryParams(params)
+  const queryString = formatQueryParams(params);
   const url = searchURL + '?' + queryString;
 
   console.log(url);
