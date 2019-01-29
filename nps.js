@@ -15,34 +15,29 @@ function formatQueryParams(params) {
 function displayResults(responseJson) {
   console.log(responseJson);
   $('#results-list').empty();
-  for (let i = 0; i < responseJson.parks.length; i++) {
-    $('#results-list').append(
-      `<li><h3>${responseJson.parks[i].data[0].name}</h3>
-      <p>${responseJson.parks[i].data[0].description}</p>
-      <a href='${responseJson.parks[i].data[0].url}'>Website Link</a>
-      </li>`
-    );
-  } 
+  const HTMLString = responseJson.data.map(obj => `<li>Name: ${obj.name} <br> Description: ${obj.description} <br> Website Link: ${obj.url}</li>`);
+  $('#results-list').html(HTMLString); 
   $('#results').removeClass('hidden');
 }
 
-function getParks(state, limit = 10) {
+function getParks(stateCode, limit = 10) {
   const params = {
-    q: state,
+    stateCode,
+    limit: limit,
     language: 'en',
     // api_key: apiKey
   };
-  const options = {
-    headers: {
-      'X-Api-Key': apiKey
-    }
-  };
+    //   const options = {
+    //     headers: {
+    //       'X-Api-Key': apiKey
+    //     }
+  //   };
   const queryString = formatQueryParams(params);
-  const url = searchURL + '?' + queryString;
+  const url = `${searchURL}?${queryString}&api_key=mapni7xujPvFutDVpHTza00RkwrZVaJlaFVqbH4w`;
 
   console.log(url);
 
-  fetch(url, options)
+  fetch(url)
     .then(response => {
       if (response.ok) {
         return response.json();
@@ -56,38 +51,13 @@ function getParks(state, limit = 10) {
 }
 
 function parkForm() {
-  $('form').submit(event => {
+  $('#js-form').on('submit', event => {
     event.preventDefault();
     const searchState = $('#js-search-state').val();
-    const maxResults = $('#js-max-results').val();
+    const maxResults = $('#js-max-results').val() - 1;
     getParks(searchState, maxResults);
   });
 }
 
 $(parkForm);
 
-//added the below code with TA to test why our API key won't load on our server
-
-function getNews(query, maxResults = 10) {
-  const params = {
-    q: query,
-    language: "en",
-  };
-  const queryString = formatQueryParams(params);
-  const url = searchURL + '?' + queryString;
-
-  console.log(url);
-
-  const options = {
-    headers: new Headers({
-      "X-Api-Key": apiKey
-    })
-  };
-
-  fetch(url, options)
-    .then(response => response.json())
-    .then(responseJson => console.log(responseJson))
-    .catch(err => {
-      $('#js-error-message').text(`Something went wrong: ${err.message}`);
-    });
-}
